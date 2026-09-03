@@ -1,0 +1,14 @@
+{
+  "name": "penguintools-ffmpeg",
+  "version-string": "0.1.0",
+  "dependencies": [
+    {
+      "name": "ffmpeg",
+      "default-features": false,
+      "features": [
+        "custom",
+        "ffmpeg"
+      ]
+    }
+  ]
+}
