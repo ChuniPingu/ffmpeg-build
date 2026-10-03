@@ -1,22 +1,29 @@
 # PenguinTools FFmpeg
 
-This directory owns the minimal standalone FFmpeg build used for audio validation and conversion.
-The build enables only the protocols, demuxers, decoders, filters, WAV encoder, and muxers required
-by PenguinTools.
+Builds the standalone FFmpeg executable used by PenguinTools for audio validation and conversion.
 
-## Requirements
+## Prerequisites
 
-- Visual Studio C++ x64 build tools
-- A Microsoft vcpkg checkout selected by `VCPKG_ROOT`
+- Windows with Visual Studio C++ x64 build tools
+- PowerShell
+- A Microsoft vcpkg checkout containing `vcpkg.exe`
 
-## Build
+The vcpkg baseline and build configuration are recorded in [vcpkg-configuration.json](vcpkg-configuration.json) and [vcpkg.json](vcpkg.json).
+
+## Quick start
+
+From the repository root:
 
 ```powershell
+$env:VCPKG_ROOT = 'C:\path\to\vcpkg'
 ./scripts/build.ps1
+./bin/ffmpeg.exe -version
 ```
 
-The script installs the pinned custom vcpkg port for `x64-windows-static` and publishes
-`bin/ffmpeg.exe` with the applicable notices in `bin/legal/`.
+The build publishes `bin/ffmpeg.exe` and its notices under `bin/legal/`.
 
-The build scripts and overlay are licensed under the [MIT License](LICENSE). FFmpeg retains
-its own LGPL license; redistribution details are in [`legal/`](legal/).
+See [build configuration and maintenance](docs/build.md) for the custom overlay, output layout, and port refresh workflow.
+
+## License
+
+Build scripts and the overlay use the [MIT license](LICENSE). FFmpeg retains its LGPL license; see the [notice](legal/NOTICE.md) and [corresponding-source information](legal/FFMPEG-SOURCE-OFFER.md).
