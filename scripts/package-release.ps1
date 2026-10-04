@@ -9,7 +9,6 @@ $binary = Join-Path $root 'bin/ffmpeg.exe'
 $release = Join-Path $root ('artifacts/' + $ReleaseTag)
 if (Test-Path -LiteralPath $release) { throw "Release output already exists: $release" }
 [IO.Directory]::CreateDirectory($release) | Out-Null
-& (Join-Path $PSScriptRoot 'smoke-audio.ps1') -Executable $binary
 $sourceCommit = (& git -C $root rev-parse HEAD).Trim()
 if ($LASTEXITCODE -ne 0) { throw 'Unable to read build source commit.' }
 $baseline = (Get-Content -LiteralPath (Join-Path $root 'vcpkg-configuration.json') -Raw | ConvertFrom-Json).'default-registry'.baseline

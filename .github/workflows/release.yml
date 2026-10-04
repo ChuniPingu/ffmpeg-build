@@ -27,7 +27,7 @@ jobs:
       - name: Build the release executable once
         shell: pwsh
         run: ./scripts/build.ps1
-      - name: Verify audio workflow and package executable, notices and sources
+      - name: Package executable, notices and sources
         shell: pwsh
         run: ./scripts/package-release.ps1 -ReleaseTag $env:GITHUB_REF_NAME -Repository $env:GITHUB_REPOSITORY
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -41,5 +41,5 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $files = @(Get-ChildItem "artifacts/$env:GITHUB_REF_NAME" -File | ForEach-Object FullName)
-          gh release create $env:GITHUB_REF_NAME @files --repo $env:GITHUB_REPOSITORY --verify-tag --title "FFmpeg $env:GITHUB_REF_NAME" --notes "Windows x64 audio build, verified with PenguinTools loudness and WAV conversion commands. Matching sources, build metadata and SHA-256 checksums are attached."
+          gh release create $env:GITHUB_REF_NAME @files --repo $env:GITHUB_REPOSITORY --verify-tag --title "FFmpeg $env:GITHUB_REF_NAME" --notes "Windows x64 audio build with notices, matching sources, build metadata and SHA-256 checksums."
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

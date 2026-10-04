@@ -2,13 +2,9 @@
 
 ## Binary releases
 
-Pushing an explicit version tag such as `v0.1.0` runs the Windows release workflow. It builds
-once from the pinned vcpkg baseline, checks PenguinTools' audio validation, loudness statistics
-file, gain and offset filters, and PCM16 WAV output, then publishes `ffmpeg-win-x64.zip`.
-The ZIP includes `ffmpeg.exe`, `legal/` and `build-metadata.json`. Matching upstream sources,
-build scripts and checksums are separate release assets. Existing release assets are not overwritten.
-
-Consumers pin a release URL and SHA-256; builds must never resolve `latest`.
+Version tags such as `v0.1.0` build and publish `ffmpeg-win-x64.zip` with the executable,
+notices and build metadata. Matching sources and checksums are separate assets.
+Consumers pin a release URL and SHA-256; existing release assets are not overwritten.
 
 Builds the standalone FFmpeg executable used by PenguinTools for audio validation and conversion.
 
