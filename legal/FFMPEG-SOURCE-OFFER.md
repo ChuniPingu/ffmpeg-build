@@ -3,9 +3,9 @@
 The Windows `ffmpeg.exe` distributed by PenguinTools is built from the custom LGPL FFmpeg build
 described by this directory's `vcpkg/ffmpeg` overlay and vcpkg manifest.
 
-The complete corresponding FFmpeg source can be reproduced with the pinned vcpkg baseline,
-overlay port, triplet, and build instructions committed with the matching PenguinTools release. Keep
-the release source archive and build metadata available for at least the period required by the
-LGPL.
+Versioned releases are published at <https://github.com/ChuniPingu/ffmpeg-build/releases>.
+Each release includes the matching upstream source archive, the producer's exact build-source
+commit (scripts, overlay, patches, triplet and manifests), build metadata and SHA-256 checksums.
+The packaged copy of this notice links directly to those matching release sources and metadata.
 
 FFmpeg upstream source: <https://ffmpeg.org/download.html>

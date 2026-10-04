@@ -1,7 +1,5 @@
 # PenguinTools FFmpeg
 
-Builds the standalone FFmpeg executable used by PenguinTools for audio validation and conversion.
-
 ## Prerequisites
 
 - Windows with Visual Studio C++ x64 build tools
