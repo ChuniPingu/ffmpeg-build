@@ -28,16 +28,9 @@ $metadata | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $root 
 
 This binary is from [$ReleaseTag]($releaseUrl), built from [$sourceCommit](https://github.com/$Repository/tree/$sourceCommit).
 
-The release includes [the build scripts, overlay, patches and pinned manifests]($sourceUrl),
-the matching upstream source archive (ffmpeg-$version-sources.tar.gz), and build-metadata.json.
-The source archive's SHA-512 is pinned in vcpkg/ffmpeg/portfile.cmake. Apply its listed patches
-and use the included build scripts and triplet to reproduce this LGPL configuration.
-All release files have SHA-256 entries in SHA256SUMS.txt.
-
 FFmpeg is licensed under LGPL-2.1-or-later. See FFMPEG-COPYRIGHT.txt and NOTICE.md.
 "@ | Set-Content -LiteralPath (Join-Path $root 'bin/legal/FFMPEG-SOURCE-OFFER.md') -Encoding utf8
 
-# Archive the exact producer commit and retain the source tarball verified by the overlay.
 & git -C $root archive --format=zip "--output=$(Join-Path $release 'ffmpeg-build-sources.zip')" $sourceCommit
 if ($LASTEXITCODE -ne 0) { throw 'Unable to archive release build sources.' }
 $port = Get-Content -LiteralPath (Join-Path $root 'vcpkg/ffmpeg/portfile.cmake') -Raw
@@ -45,13 +38,13 @@ $expectedSourceHash = [regex]::Match($port, 'SHA512\s+([0-9a-f]{128})').Groups[1
 if ($expectedSourceHash.Length -ne 128) { throw 'Missing pinned FFmpeg source hash.' }
 $downloads = if ([string]::IsNullOrWhiteSpace($env:VCPKG_DOWNLOADS)) { Join-Path $env:VCPKG_ROOT 'downloads' } else { $env:VCPKG_DOWNLOADS }
 $sourceArchive = Get-ChildItem -LiteralPath $downloads -File -Filter '*ffmpeg*.tar.gz' |
-    Where-Object { (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA512).Hash -eq $expectedSourceHash } | Select-Object -First 1
+Where-Object { (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA512).Hash -eq $expectedSourceHash } | Select-Object -First 1
 if ($null -eq $sourceArchive) { throw 'Verified upstream FFmpeg source archive was not found in the build cache.' }
 Copy-Item -LiteralPath $sourceArchive.FullName -Destination (Join-Path $release "ffmpeg-$version-sources.tar.gz")
 Copy-Item -LiteralPath (Join-Path $root 'bin/build-metadata.json') -Destination $release
 Compress-Archive -Path (Join-Path $root 'bin/*') -DestinationPath (Join-Path $release 'ffmpeg-win-x64.zip') -CompressionLevel Optimal
 $checksums = @(Get-ChildItem -LiteralPath $release -File | Sort-Object Name | ForEach-Object {
-    (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() + '  ' + $_.Name
-})
+        (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() + '  ' + $_.Name
+    })
 $checksums | Set-Content -LiteralPath (Join-Path $release 'SHA256SUMS.txt') -Encoding ascii
 Write-Host "Prepared verified release: $release"

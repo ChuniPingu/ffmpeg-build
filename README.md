@@ -1,13 +1,5 @@
 # PenguinTools FFmpeg
 
-## Binary releases
-
-Version tags such as `v0.1.0` build and publish `ffmpeg-win-x64.zip` with the executable,
-notices and build metadata. Matching sources and checksums are separate assets.
-Consumers pin a release URL and SHA-256; existing release assets are not overwritten.
-
-Builds the standalone FFmpeg executable used by PenguinTools for audio validation and conversion.
-
 ## Prerequisites
 
 - Windows with Visual Studio C++ x64 build tools

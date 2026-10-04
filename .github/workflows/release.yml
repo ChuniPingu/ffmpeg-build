@@ -12,8 +12,8 @@ jobs:
     runs-on: windows-2025
     timeout-minutes: 90
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
-      - name: Check out the pinned vcpkg baseline
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Checkout
         shell: pwsh
         run: |
           $baseline = (Get-Content vcpkg-configuration.json -Raw | ConvertFrom-Json).'default-registry'.baseline
@@ -27,19 +27,19 @@ jobs:
       - name: Build the release executable once
         shell: pwsh
         run: ./scripts/build.ps1
-      - name: Package executable, notices and sources
+      - name: Package
         shell: pwsh
         run: ./scripts/package-release.ps1 -ReleaseTag $env:GITHUB_REF_NAME -Repository $env:GITHUB_REPOSITORY
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ffmpeg-release-${{ github.ref_name }}
           path: artifacts/${{ github.ref_name }}/*
           if-no-files-found: error
-      - name: Publish the immutable versioned release assets
+      - name: Publish
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           $files = @(Get-ChildItem "artifacts/$env:GITHUB_REF_NAME" -File | ForEach-Object FullName)
-          gh release create $env:GITHUB_REF_NAME @files --repo $env:GITHUB_REPOSITORY --verify-tag --title "FFmpeg $env:GITHUB_REF_NAME" --notes "Windows x64 audio build with notices, matching sources, build metadata and SHA-256 checksums."
+          gh release create $env:GITHUB_REF_NAME @files --repo $env:GITHUB_REPOSITORY --verify-tag --title "FFmpeg $env:GITHUB_REF_NAME"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
