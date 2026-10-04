@@ -16,9 +16,11 @@ $resolvedPublishRoot = [IO.Path]::GetFullPath($publishRoot)
 if (-not $resolvedPublishRoot.StartsWith($root.TrimEnd('\') + '\', [StringComparison]::OrdinalIgnoreCase)) {
     throw "Refusing cleanup outside the build repository: $resolvedPublishRoot"
 }
+
 if (Test-Path -LiteralPath $publishRoot) {
     Remove-Item -LiteralPath $publishRoot -Recurse -Force
 }
+
 New-Item -ItemType Directory -Path $publishRoot -Force | Out-Null
 Copy-Item -LiteralPath $source -Destination $publishRoot -Force
 

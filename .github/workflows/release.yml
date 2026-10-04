@@ -18,13 +18,25 @@ jobs:
         run: |
           $baseline = (Get-Content vcpkg-configuration.json -Raw | ConvertFrom-Json).'default-registry'.baseline
           git clone --filter=blob:none https://github.com/microsoft/vcpkg "$env:RUNNER_TEMP/vcpkg"
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+          if ($LASTEXITCODE -ne 0) {
+            exit $LASTEXITCODE
+          }
+
           git -C "$env:RUNNER_TEMP/vcpkg" checkout $baseline
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+          if ($LASTEXITCODE -ne 0) {
+            exit $LASTEXITCODE
+          }
+
           & "$env:RUNNER_TEMP/vcpkg/bootstrap-vcpkg.bat" -disableMetrics
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+          if ($LASTEXITCODE -ne 0) {
+            exit $LASTEXITCODE
+          }
+
           "VCPKG_ROOT=$env:RUNNER_TEMP/vcpkg" >> $env:GITHUB_ENV
-      - name: Build the release executable once
+      - name: Build
         shell: pwsh
         run: ./scripts/build.ps1
       - name: Package
@@ -42,4 +54,7 @@ jobs:
         run: |
           $files = @(Get-ChildItem "artifacts/$env:GITHUB_REF_NAME" -File | ForEach-Object FullName)
           gh release create $env:GITHUB_REF_NAME @files --repo $env:GITHUB_REPOSITORY --verify-tag --title "FFmpeg $env:GITHUB_REF_NAME"
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+          if ($LASTEXITCODE -ne 0) {
+            exit $LASTEXITCODE
+          }
