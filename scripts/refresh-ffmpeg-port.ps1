@@ -59,7 +59,7 @@ if ($patches.Count -eq 0) {
     throw "no FFmpeg overlay patches were found"
 }
 foreach ($patch in $patches) {
-    & git -C $root apply $patch.FullName
+    & git -C $root apply --ignore-whitespace $patch.FullName
     if ($LASTEXITCODE -ne 0) {
         throw "failed to apply $($patch.Name)"
     }
