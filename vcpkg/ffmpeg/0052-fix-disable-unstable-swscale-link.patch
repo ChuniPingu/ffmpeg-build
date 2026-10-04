@@ -5,7 +5,7 @@ index 0f0639f..30cb3cc 100644
 @@ -1339,6 +1339,8 @@ linear_mat3(const AVRational m00, const AVRational m01, const AVRational m02,
      return c;
  }
-
+ 
 +#endif
 +
  void ff_sws_chroma_pos(const SwsFormat *fmt, bool *incomplete,
@@ -17,7 +17,7 @@ index 0f0639f..30cb3cc 100644
  }
 +
 +#if CONFIG_UNSTABLE
-
+ 
  int ff_sws_decode_colors(SwsContext *ctx, SwsPixelType type,
                           SwsOpList *ops, const SwsFormat *fmt, bool *incomplete)
 diff --git a/libswscale/graph.c b/libswscale/graph.c
