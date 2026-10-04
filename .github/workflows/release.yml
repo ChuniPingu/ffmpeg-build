@@ -1,0 +1,45 @@
+name: Release Windows FFmpeg
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+concurrency:
+  group: ffmpeg-release-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: windows-2025
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Check out the pinned vcpkg baseline
+        shell: pwsh
+        run: |
+          $baseline = (Get-Content vcpkg-configuration.json -Raw | ConvertFrom-Json).'default-registry'.baseline
+          git clone --filter=blob:none https://github.com/microsoft/vcpkg "$env:RUNNER_TEMP/vcpkg"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git -C "$env:RUNNER_TEMP/vcpkg" checkout $baseline
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & "$env:RUNNER_TEMP/vcpkg/bootstrap-vcpkg.bat" -disableMetrics
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          "VCPKG_ROOT=$env:RUNNER_TEMP/vcpkg" >> $env:GITHUB_ENV
+      - name: Build the release executable once
+        shell: pwsh
+        run: ./scripts/build.ps1
+      - name: Verify audio workflow and package executable, notices and sources
+        shell: pwsh
+        run: ./scripts/package-release.ps1 -ReleaseTag $env:GITHUB_REF_NAME -Repository $env:GITHUB_REPOSITORY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ffmpeg-release-${{ github.ref_name }}
+          path: artifacts/${{ github.ref_name }}/*
+          if-no-files-found: error
+      - name: Publish the immutable versioned release assets
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $files = @(Get-ChildItem "artifacts/$env:GITHUB_REF_NAME" -File | ForEach-Object FullName)
+          gh release create $env:GITHUB_REF_NAME @files --repo $env:GITHUB_REPOSITORY --verify-tag --title "FFmpeg $env:GITHUB_REF_NAME" --notes "Windows x64 audio build, verified with PenguinTools loudness and WAV conversion commands. Matching sources, build metadata and SHA-256 checksums are attached."
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
